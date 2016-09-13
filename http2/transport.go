@@ -20,6 +20,7 @@ import (
 	"math"
 	"net"
 	"net/http"
+	"net/url"
 	"sort"
 	"strconv"
 	"strings"
@@ -488,6 +489,13 @@ func (t *Transport) dialTLSDefault(network, addr string, cfg *tls.Config) (net.C
 // soon as possible after handling the first request.
 func (t *Transport) disableKeepAlives() bool {
 	return t.t1 != nil && t.t1.DisableKeepAlives
+}
+
+func (t *Transport) proxy() func(*http.Request) (*url.URL, error) {
+	if t.t1 != nil {
+		return t.t1.Proxy
+	}
+	return nil
 }
 
 func (t *Transport) expectContinueTimeout() time.Duration {
